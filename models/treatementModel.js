@@ -1,21 +1,33 @@
 import mongoose from "mongoose";
 
 const TreatmentSchema = new mongoose.Schema({
+    name:{
+        type:String,
+    },
+    email:{
+        type:String,
+        required:true,
+        unique:false
+    },
     diagnosis: {
         type: Number,
-        required: true
+        // required: true
+    },
+    numofdiagnosis: {
+        type: Number,
+        // required: true
     },
     disease: {
-        type: String,
-        required: true
+        type: Number,
+        // required: true
     },
     startAt: {
         type: Date,
-        required: true
+        // required: true
     },
     endAt: {
         type: Date,
-        required: false
+        // required: false
     },
     resources: {
         type: Object,
@@ -26,28 +38,38 @@ const TreatmentSchema = new mongoose.Schema({
         required: false,
         default: 0
     },
-    insurance: {
-        type: String,
-        required: false
-    },
+    // insurance: {
+    //     type: String,
+    //     // required: false
+    // },
     facility: {
         type: String,
-        required: false
+        // required: false
     },
-    numOfExternalInjuries: {
+    numofexternalInjuries: {
         type: Number,
-        required: false,
+        // required: false,
+        default: 0
+    },
+    externalInjuries: {
+        type: Number,
+        // required: false,
         default: 0
     },
     doctor: {
         type: String,
-        required: true
+        // required: true
     },
     status: {
         type: String,
-        enum: ['pending', 'admitted', 'readmission', 'cancelled'],
-        default: 'pending'
-    }
+        enum: ['pending', 'admitted', 'readmission', 'discharged'],
+        default: 'admitted'
+    },
+    assistant: {
+        type: String,
+        // required: false
+    },
 }, { timestamps: true });
 
-module.exports = mongoose.model('Treatment', TreatmentSchema);
+const treatment = mongoose.model('Treatment', TreatmentSchema);
+export default treatment;

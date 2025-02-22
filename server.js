@@ -1,21 +1,20 @@
 import express from 'express';
-import connectDB from './config/db';
+import connectDB from './config/db.js';
 import dotenv from 'dotenv';
+import assistantRouter from './routes/assistantRoutes.js';
+import inventoryRouter from './routes/inventoryManagerRoutes.js';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "*");
-  res.header("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS");
-  next();
-});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use("/api/assistant",assistantRouter)
+app.use("/api/inventory",inventoryRouter)
 
 // Connect to MDB
 connectDB();

@@ -1,35 +1,52 @@
 import mongoose from "mongoose";
 
-const patientSchema = mongoose.Schema({
+const patientSchema = new mongoose.Schema({
     name:{
         type:String,
+        required:true,
 
+    },
+    age:{
+        type:Number,
+        required:true,
     },
     email:{
         type:String,
         required:true,
+        unique:true
     },
     gender:{
-        type:String
+        type:String,
+        required:true,
 
     },
     weight:{
         type:Number,
+        required:true,
+
     },
-    treatments:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Treatment"
-    },
+    // treatments: [{
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: "Treatment"
+    //   }],
     income:{
         type:Number
     },
-    insurance:{
-        type:Number,
+    home:{        //filter fior ml
+        type:Boolean,
+        default:false,
+    },
+    insurance: {
+        type: String,
+
+        enum:['public','private','self-pay'],
+        default:'public'
+        // required: false
     },
 
 
 
 
-})
-const model = mongoose.model("Patient",patientSchema);
-export default model
+},{ timestamps: true })
+const patient = mongoose.model("Patient",patientSchema);
+export default patient
