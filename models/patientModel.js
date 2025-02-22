@@ -25,10 +25,7 @@ const patientSchema = new mongoose.Schema({
         required:true,
 
     },
-    // treatments: [{
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "Treatment"
-    //   }],
+  
     income:{
         type:Number
     },
