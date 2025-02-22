@@ -123,35 +123,7 @@ export const getAllPatients = async (req, res) => {
     });
   }
 };
-export const getTreatment = async (req, res) => {
-  try {
-    const email = req.query.email;
-    if (!email) {
-      return res.status(400).json({
-        success: false,
-        message: "Email required",
-      });
-    }
-    const response = await treatment.find({ email });
-    if (response) {
-      return res.status(200).json({
-        success: true,
-        data: response,
-      });
-    } else {
-      return res.status(404).json({
-        success: false,
-        message: "No data found",
-      });
-    }
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
-  }
-};
+
 export const getPatient = async (req, res) => {
   try {
     const email = req.query.email;
@@ -235,6 +207,7 @@ export const predictReadmission = async (req, res) => {
           pat.age * ((treat.endAt - treat.startAt) / (1000 * 60 * 60 * 24)),
       };
       const response = await axios.post(`${flask_origin}/predict`, data);
+      console.log(response.data);
       if (response) {
         return res.status(200).json({
           success: true,
@@ -255,3 +228,46 @@ export const predictReadmission = async (req, res) => {
     });
   }
 };
+export const getAllPatientOfAssissant = async (req, res) => {
+    try {
+        const assistant = req.query.assistant;
+        if (!assistant) {
+        return res.status(400).json({
+            success: false,
+            message: "Assistant required",
+        });
+        }
+        const response = await treatment.find({ assistant });
+        const uniquePatients = new Set();
+
+for (const entry of response) {
+  const { email } = entry;
+  if (!email) continue; 
+
+  const patientData = await patient.findOne({ email });
+  if (patientData) {
+    uniquePatients.add(patientData);
+  }
+}
+
+const uniquePatientsArray = Array.from(uniquePatients);
+console.log(uniquePatientsArray);
+        if (response) {
+        return res.status(200).json({
+            success: true,
+            data: uniquePatientsArray,
+        });
+        } else {
+        return res.status(404).json({
+            success: false,
+            message: "No data found",
+        });
+        }
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+        success: false,
+        message: "Internal server error",
+        });
+    }
+    }
