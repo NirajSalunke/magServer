@@ -9,10 +9,7 @@ const TreatmentSchema = new mongoose.Schema({
         required:true,
         unique:false
     },
-    diagnosis: {
-        type: Number,
-        // required: true
-    },
+    
     numofdiagnosis: {
         type: Number,
         // required: true
@@ -36,25 +33,22 @@ const TreatmentSchema = new mongoose.Schema({
     procedures: {
         type: Number,
         required: false,
-        default: 0
     },
     // insurance: {
     //     type: String,
     //     // required: false
     // },
     facility: {
-        type: String,
+        type: Boolean,
         // required: false
     },
     numofexternalInjuries: {
         type: Number,
         // required: false,
-        default: 0
     },
     externalInjuries: {
         type: Number,
         // required: false,
-        default: 0
     },
     doctor: {
         type: String,

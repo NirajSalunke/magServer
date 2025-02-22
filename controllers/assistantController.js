@@ -6,6 +6,8 @@ dotenv.config();
 const flask_origin = process.env.FLASK_URL;
 export const sendPatientData= async (req,res)=>{
     const {patientData,treatmentData} = req.body
+    console.log(patientData)
+    console.log(treatmentData)
     if(!patientData || !treatmentData){
         return res.status(400).json({
             success:false,
@@ -211,13 +213,13 @@ export const predictReadmission = async(req,res)=>{
                 length_of_stay:(treat.endAt-treat.startAt)/ (1000 * 60 * 60 * 24),
                 median_household_income:pat.income,
                 age:pat.age,
-                diagnoses:treat.diagnosis,
+                diagnoses:treat.disease,
                 external_injuries:treat.externalInjuries,
                 insurance_type_public:pat.insurance=="public"?1:0,
                 insurance_type_self_pay:pat.insurance=="self-pay"?1:0,
                 gender_male:pat.gender=="male"?1:0,
                 home_yes:pat.home?1:0,
-                facility_yes:treat.facility=="Yes"?1:0,
+                facility_yes:treat.facility?1:0,
                 Age_stay_Intersection: pat.age * ((treat.endAt-treat.startAt)/ (1000 * 60 * 60 * 24)),
             }
             const response = await axios.post(`${flask_origin}/predict`,data)
