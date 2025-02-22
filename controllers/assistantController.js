@@ -5,7 +5,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 const flask_origin = process.env.FLASK_URL;
 export const sendPatientData= async (req,res)=>{
-    const {patientData,treatmentData} = req.body
+    try {
+        const {patientData,treatmentData} = req.body
     console.log(patientData)
     console.log(treatmentData)
     if(!patientData || !treatmentData){
@@ -28,6 +29,15 @@ export const sendPatientData= async (req,res)=>{
             message:"Internal server error"
         })
     }
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            success:false,
+            message:error.message
+        })
+        
+    }
+    
 }
 export const updateTreatement = async (req, res) => {
     const { email, updateData } = req.body;
