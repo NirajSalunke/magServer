@@ -20,7 +20,7 @@ export const singup = async (req, res) => {
 export const getRole = async (req, res) => {
     try{
         const clerkid = req.query.clerkid;
-        if(!email){
+        if(!clerkid){
             return res.status(400).json({
                 success: false,
                 message: "Email required"
