@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import assistantRouter from './routes/assistantRoutes.js';
 import inventoryRouter from './routes/inventoryManagerRoutes.js';
 import cors from 'cors';
+import userRouter from './routes/userRoutes.js';
 dotenv.config();
 
 const app = express();
@@ -15,7 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/assistant",assistantRouter)
 app.use("/api/inventory",inventoryRouter)
-
+app.use("/api/user",userRouter)
 // Connect to MDB
 connectDB();
 
