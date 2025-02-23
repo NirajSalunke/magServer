@@ -162,6 +162,18 @@ export const createTreatment = async (req, res) => {
         message: "Data required",
       });
     }
+    const res = await treatment.find({ email: data.email });
+    if (res) {
+      res.map((ele) => {
+        if (ele.status === "admiited" || ele.status === "readmission") {
+          return res.status(400).json({
+            success: false,
+            message: "Patient is already admitted or readmitted",
+          });
+        }
+      });
+    }
+
     const response = await treatment.create(data);
     if (response) {
       return res.status(200).json({
@@ -186,7 +198,7 @@ export const createTreatment = async (req, res) => {
 export const predictReadmission = async (req, res) => {
   try {
     console.log("hi");
-    const {email} = req.body;
+    const { email } = req.body;
     let data;
     const pat = await patient.findOne({ email });
     const treat = await treatment.findOne({ email, status: "discharged" });
@@ -205,39 +217,35 @@ export const predictReadmission = async (req, res) => {
         gender_male: pat.gender == "male" ? 1 : 0,
         home_yes: pat.home ? 1 : 0,
         facility_yes: treat.facility ? 1 : 0,
-     
       };
       const response = await axios.post(`${flask_origin}/predict`, data);
-      console.log("data,",response.data.readmission_prediction);
-    
+      console.log("data,", response.data.readmission_prediction);
+
       if (response) {
-          if(response.data.readmission_prediction == 1){
-            const updatedResponse = await treatment.findOneAndUpdate(
-              { email},
-              { $set: {status:"readmission"} },
-              { new: true }
-            );
-                return res.status(200).json({
-                  success: true,
-                  data: response.data,
-                });
-          }
-          else{
-            return res.status(200).json({
-              success: true,
-              data: response.data,
-            });
-          } 
-        }    
-      else {
+        if (response.data.readmission_prediction == 1) {
+          const updatedResponse = await treatment.findOneAndUpdate(
+            { email },
+            { $set: { status: "readmission" } },
+            { new: true }
+          );
+          return res.status(200).json({
+            success: true,
+            data: response.data,
+          });
+        } else {
+          return res.status(200).json({
+            success: true,
+            data: response.data,
+          });
+        }
+      } else {
         return res.status(404).json({
           success: false,
           message: "No data found",
         });
       }
     }
-  } 
-  catch (error) {
+  } catch (error) {
     console.log(error);
     return res.status(500).json({
       success: false,
@@ -246,45 +254,45 @@ export const predictReadmission = async (req, res) => {
   }
 };
 export const getAllPatientOfAssissant = async (req, res) => {
-    try {
-        const assistant = req.query.assistant;
-        if (!assistant) {
-        return res.status(400).json({
-            success: false,
-            message: "Assistant required",
-        });
-        }
-        const response = await treatment.find({ assistant });
-        const uniquePatients = new Set();
-
-for (const entry of response) {
-  const { email } = entry;
-  if (!email) continue; 
-
-  const patientData = await patient.findOne({ email });
-  if (patientData) {
-    uniquePatients.add(patientData);
-  }
-}
-
-const uniquePatientsArray = Array.from(uniquePatients);
-console.log(uniquePatientsArray);
-        if (response) {
-        return res.status(200).json({
-            success: true,
-            data: uniquePatientsArray,
-        });
-        } else {
-        return res.status(404).json({
-            success: false,
-            message: "No data found",
-        });
-        }
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({
+  try {
+    const assistant = req.query.assistant;
+    if (!assistant) {
+      return res.status(400).json({
         success: false,
-        message: "Internal server error",
-        });
+        message: "Assistant required",
+      });
     }
-   }
+    const response = await treatment.find({ assistant });
+    const uniquePatients = new Set();
+
+    for (const entry of response) {
+      const { email } = entry;
+      if (!email) continue;
+
+      const patientData = await patient.findOne({ email });
+      if (patientData) {
+        uniquePatients.add(patientData);
+      }
+    }
+
+    const uniquePatientsArray = Array.from(uniquePatients);
+    console.log(uniquePatientsArray);
+    if (response) {
+      return res.status(200).json({
+        success: true,
+        data: uniquePatientsArray,
+      });
+    } else {
+      return res.status(404).json({
+        success: false,
+        message: "No data found",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
