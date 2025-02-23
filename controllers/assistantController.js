@@ -43,7 +43,7 @@ export const sendPatientData = async (req, res) => {
     });
   }
 };
-export const updateTreatement = async (req, res) => {
+export const updateTreatement = async (req, res,next) => {
   const { email, updateData } = req.body;
   if (!email) {
     return res.status(400).json({
@@ -82,10 +82,11 @@ export const updateTreatement = async (req, res) => {
     );
 
     if (updatedResponse) {
-      return res.status(200).json({
-        success: true,
-        message: "Data updated successfully",
-      });
+      next()
+      // return res.status(200).json({
+      //   success: true,
+      //   message: "Data updated successfully",
+      // });
     } else {
       return res.status(500).json({
         success: false,
@@ -162,6 +163,7 @@ export const createTreatment = async (req, res) => {
         message: "Data required",
       });
     }
+
     const response = await treatment.create(data);
     if (response) {
       return res.status(200).json({
@@ -235,6 +237,12 @@ export const predictReadmission = async (req, res) => {
           message: "No data found",
         });
       }
+    }
+    else{
+      return res.status(404).json({
+        success: false,
+        message: "No data found",}
+      );
     }
   } 
   catch (error) {
