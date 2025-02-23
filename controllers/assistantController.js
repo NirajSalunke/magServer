@@ -211,7 +211,7 @@ export const predictReadmission = async (req, res) => {
       console.log("data,",response.data.readmission_prediction);
     
       if (response) {
-          if(response.data.data.readmission_prediction == 1){
+          if(response.data.readmission_prediction == 1){
             const updatedResponse = await treatment.findOneAndUpdate(
               { email},
               { $set: {status:"readmission"} },

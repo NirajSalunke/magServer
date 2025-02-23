@@ -19,14 +19,14 @@ export const singup = async (req, res) => {
 }
 export const getRole = async (req, res) => {
     try{
-        const email = req.query.email;
+        const clerkid = req.query.clerkid;
         if(!email){
             return res.status(400).json({
                 success: false,
                 message: "Email required"
             });
         }
-        const response = await User.findOne({email});
+        const response = await User.findOne({clerkid});
         if(response){
             return res.status(200).json({
                 success: true,
