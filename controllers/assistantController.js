@@ -185,42 +185,59 @@ export const createTreatment = async (req, res) => {
 //call ml model to predict readmission
 export const predictReadmission = async (req, res) => {
   try {
+    console.log("hi");
+    const {email} = req.body;
     let data;
     const pat = await patient.findOne({ email });
     const treat = await treatment.findOne({ email, status: "discharged" });
     if (pat && treat) {
       data = {
         num_diagnoses: treat.numofdiagnosis,
-        num_external_injuries: treat.numofexternalInjuries,
         num_procedures: treat.procedures,
+        num_external_injuries: treat.numofexternalInjuries,
         length_of_stay: (treat.endAt - treat.startAt) / (1000 * 60 * 60 * 24),
         median_household_income: pat.income,
         age: pat.age,
         diagnoses: treat.disease,
         external_injuries: treat.externalInjuries,
         insurance_type_public: pat.insurance == "public" ? 1 : 0,
-        insurance_type_self_pay: pat.insurance == "self-pay" ? 1 : 0,
+        "insurance_type_self-pay": pat.insurance == "self-pay" ? 1 : 0,
         gender_male: pat.gender == "male" ? 1 : 0,
         home_yes: pat.home ? 1 : 0,
         facility_yes: treat.facility ? 1 : 0,
-        Age_stay_Intersection:
-          pat.age * ((treat.endAt - treat.startAt) / (1000 * 60 * 60 * 24)),
+     
       };
       const response = await axios.post(`${flask_origin}/predict`, data);
-      console.log(response.data);
+      console.log("data,",response.data.readmission_prediction);
+    
       if (response) {
-        return res.status(200).json({
-          success: true,
-          data: response.data,
-        });
-      } else {
+          if(response.data.data.readmission_prediction == 1){
+            const updatedResponse = await treatment.findOneAndUpdate(
+              { email},
+              { $set: {status:"readmission"} },
+              { new: true }
+            );
+                return res.status(200).json({
+                  success: true,
+                  data: response.data,
+                });
+          }
+          else{
+            return res.status(200).json({
+              success: true,
+              data: response.data,
+            });
+          } 
+        }    
+      else {
         return res.status(404).json({
           success: false,
           message: "No data found",
         });
       }
     }
-  } catch (error) {
+  } 
+  catch (error) {
     console.log(error);
     return res.status(500).json({
       success: false,
@@ -270,4 +287,4 @@ console.log(uniquePatientsArray);
         message: "Internal server error",
         });
     }
-    }
+   }
