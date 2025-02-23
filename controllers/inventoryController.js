@@ -4,9 +4,12 @@ export const getReadmission = async (req, res) => {
 	try {
 		const response = await treatment.find({ status: "readmission" });
 		if (response) {
+			const data = response.map((ele) => {
+				return { ...ele, days: (ele.endAt - ele.startAt) / (1000 * 60 * 60 * 24) };
+			});
 			return res.status(200).json({
 				success: true,
-				data: response,
+				data: data
 			});
 		} else {
 			return res.status(404).json({

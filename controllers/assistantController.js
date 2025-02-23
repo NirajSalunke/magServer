@@ -44,6 +44,7 @@ export const sendPatientData = async (req, res) => {
   }
 };
 export const updateTreatement = async (req, res,next) => {
+  console.log("updating")
   const { email, updateData } = req.body;
   if (!email) {
     return res.status(400).json({
